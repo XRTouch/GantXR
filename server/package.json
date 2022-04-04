@@ -1,0 +1,16 @@
+{
+  "name": "xrglove",
+  "version": "1.0.0",
+  "description": "force touch glove for xr interactions",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "author": "FurWaz",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.17.3",
+    "socket.io": "^4.4.1"
+  }
+}

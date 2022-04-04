@@ -2,11 +2,21 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <script src="./socket.io/socket.io.js"></script>
     <script src="./script.js" type="module" defer></script>
     <style>
         body {
             margin: 0;
             padding: 0;
+        }
+        .fps-counter {
+            position: fixed;
+            top: 5px; left: 5px;
+            font-size: 20px;
+            font-family: Arial, Helvetica, sans-serif;
+            text-shadow: -1px 1px 0px #000A;
+            margin: 0px; padding: 0px;
+            color: white;
         }
     </style>
     <title>WebDemo2</title>
