@@ -9,7 +9,7 @@ class Engine {
     static renderer = null;
     static lastFrameTime = 0;
     static initialized = false;
-    static startupDone = true;
+    static startupDone = false;
     static renderCallback = () => {};
 
     static XRSession = null;
@@ -39,13 +39,15 @@ class Engine {
         
         /** Scene **/
         this.scene = new THREE.Scene();
-        new RGBELoader().load("./model/background.hdr", (rect, data) => {
-            let cube = pmremGenerator.fromEquirectangular(rect);
-            pmremGenerator.compileCubemapShader();
-            this.scene.background = cube.texture;
-            this.scene.environment = cube.texture;
-            pmremGenerator.dispose();
-        });
+        this.scene.background = new THREE.Color(0x4c6e63);
+        if (false) // hdr background doesn't work in vr (don't know why)
+            new RGBELoader().load("./model/background.hdr", (rect, data) => {
+                let cube = pmremGenerator.fromEquirectangular(rect);
+                pmremGenerator.compileCubemapShader();
+                this.scene.background = cube.texture;
+                // this.scene.environment = cube.texture;
+                pmremGenerator.dispose();
+            });
 
         /** Camera **/
         this.camera = new THREE.PerspectiveCamera( 50, window.innerWidth / window.innerHeight, 0.1, 1000);
@@ -56,7 +58,7 @@ class Engine {
         var hemiLight = new THREE.HemisphereLight( 0x204680, 0x805340, 0.6 );
         hemiLight.position.set( 0, 500, 0 );
         
-        var dirLight = new THREE.DirectionalLight( 0xfff9c4, 1 );
+        var dirLight = new THREE.DirectionalLight( 0xffe796, 1 );
         dirLight.position.set( 1, 2, 1.3 );
         dirLight.position.multiplyScalar(50);
         dirLight.name = "dirlight";
@@ -66,13 +68,14 @@ class Engine {
         this.scene.add( dirLight );
 
         dirLight.castShadow = true;
-        dirLight.shadowMapWidth = dirLight.shadowMapHeight = 1024;
+        dirLight.shadow.mapSize.width = dirLight.shadow.mapSize.height = 1024;
 
         dirLight.shadow.camera.far = 3500;
-        dirLight.shadow.bias = -0.0001;
+        dirLight.shadow.bias = -0.000005;
 
         this.player = new THREE.Group();
         this.player.add(this.camera);
+        this.camera.lookAt(0, 1.3, -1);
 
         /** Window resize **/
         window.addEventListener('resize', () => {
@@ -88,6 +91,7 @@ class Engine {
         this.XRSession.requestReferenceSpace('bounded-floor').then((refSpace) => {
             Engine.XRSpace = refSpace;
         });
+        this.player.position.set(0, 1, 5);
     }
 
     static renderScene(time, frame) {
@@ -132,7 +136,7 @@ class Engine {
     }
 
     static getXRFrame() {
-        return this.frame;
+        return this.XRFrame;
     }
 
     static getPlayer() {
@@ -141,6 +145,18 @@ class Engine {
 
     static isInVR() {
         return this.renderer.xr.isPresenting;
+    }
+
+    static createCube(pos, size, color) {
+        const obj = new THREE.Mesh(
+            new THREE.BoxGeometry(size.x, size.y, size.z),
+            new THREE.MeshStandardMaterial({
+                color: color
+            })
+        );
+        obj.position.set(pos.x, pos.y, pos.z);
+        obj.castShadow = true; obj.receiveShadow = true;
+        return obj;
     }
 }
 

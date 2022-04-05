@@ -37,6 +37,7 @@ class Logger {
     }
 
     static error(message) {
+        if (message.stack) message = message.stack;
         this.log("[ERROR] >> "+message, this.FgRed);
     }
 
