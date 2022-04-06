@@ -59,10 +59,7 @@ class Engine {
         hemiLight.position.set( 0, 500, 0 );
         
         var dirLight = new THREE.DirectionalLight( 0xffe796, 1 );
-        dirLight.position.set( 1, 2, 1.3 );
-        dirLight.position.multiplyScalar(50);
-        dirLight.name = "dirlight";
-        // dirLight.shadowCameraVisible = true;
+        dirLight.position.set( 10, 20, 13 );
         
         this.scene.add( hemiLight );
         this.scene.add( dirLight );
@@ -70,12 +67,17 @@ class Engine {
         dirLight.castShadow = true;
         dirLight.shadow.mapSize.width = dirLight.shadow.mapSize.height = 1024;
 
-        dirLight.shadow.camera.far = 3500;
-        dirLight.shadow.bias = -0.000005;
+        dirLight.shadow.camera.top = 3;
+        dirLight.shadow.camera.bottom = -3;
+        dirLight.shadow.camera.left = -3;
+        dirLight.shadow.camera.right = 5;
+        dirLight.shadow.camera.near = 15;
+        dirLight.shadow.camera.far = 200;
+        dirLight.shadow.bias = -0.000001;
 
         this.player = new THREE.Group();
         this.player.add(this.camera);
-        this.camera.lookAt(0, 1.3, -1);
+        this.scene.add(this.player);
 
         /** Window resize **/
         window.addEventListener('resize', () => {
@@ -91,7 +93,7 @@ class Engine {
         this.XRSession.requestReferenceSpace('bounded-floor').then((refSpace) => {
             Engine.XRSpace = refSpace;
         });
-        this.player.position.set(0, 1, 5);
+        this.player.position.set(0, 0, -1.4);
     }
 
     static renderScene(time, frame) {
@@ -150,13 +152,15 @@ class Engine {
     static createCube(pos, size, color) {
         const obj = new THREE.Mesh(
             new THREE.BoxGeometry(size.x, size.y, size.z),
-            new THREE.MeshStandardMaterial({
-                color: color
-            })
+            Engine.createMaterial({color: color})
         );
         obj.position.set(pos.x, pos.y, pos.z);
         obj.castShadow = true; obj.receiveShadow = true;
         return obj;
+    }
+
+    static createMaterial(properties) {
+        return new THREE.MeshPhongMaterial(properties);
     }
 }
 

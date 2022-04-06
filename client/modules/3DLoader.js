@@ -1,4 +1,5 @@
 import { GLTFLoader } from 'https://unpkg.com/three@0.126.0/examples/jsm/loaders/GLTFLoader.js';
+import Engine from "./engine.js";
 const loader = new GLTFLoader();
 let scene = null;
 
@@ -15,6 +16,9 @@ export function loadModel(path) {
                 if (node.isMesh) {
                     node.castShadow = true;
                     node.receiveShadow = true;
+                    node.material = Engine.createMaterial({
+                        color: node.material.color
+                    });
                 }
             });
             scene.add(glb.scene);

@@ -17,10 +17,12 @@ function setup(server) {
         });
 
         socket.on(SOCKET_EVENT.SET_INDEX_FORCE, force => {
-            GloveInterface.setIndexForce(force);
+            Logger.info("Index force: "+force);
+            // GloveInterface.setIndexForce(force);
         });
         socket.on(SOCKET_EVENT.SET_THUMB_FORCE, force => {
-            GloveInterface.setThumbForce(force);
+            Logger.info("Thumb force: "+force);
+            // GloveInterface.setThumbForce(force);
         });
         socket.on(SOCKET_EVENT.LOG_MSG, msg => {
             Logger.socket(msg, socket);

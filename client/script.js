@@ -18,10 +18,10 @@ try {
     Physic.init().then(() => {Logger.success("Physic engine initialized");});
 } catch(e) {Logger.error(e);}
 
-// Logger.info("Loading map model ...");
-// Loader.loadModel("./model/map.glb").then(m => {
-//     Logger.success("Map model loaded");
-// }).catch(e => Logger.error(e));
+Logger.info("Loading map model ...");
+Loader.loadModel("./model/map.glb").then(m => {
+    Logger.success("Map model loaded");
+}).catch(e => Logger.error(e));
 
 const fpsCounter = document.createElement("p");
 fpsCounter.classList.add("fps-counter");
@@ -29,9 +29,10 @@ document.body.appendChild(fpsCounter);
 let _fps = 60;
 
 let player = Engine.getPlayer();
-Hands.setModelContainer(Engine.getScene());
+Hands.setModelContainer(player);
 
 Engine.setRenderCallback(dt => {
+    if (dt > 2) dt = 0;
     _fps += (1/dt - _fps) * dt;
     fpsCounter.innerHTML = "FPS: " + Math.round(_fps);
 

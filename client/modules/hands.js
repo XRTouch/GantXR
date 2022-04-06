@@ -17,6 +17,7 @@ class Hands {
     static boxes = {left: [], right: []};
     static modelsContainer = null;
 
+    static colliders = [];
     static indexBox = null;
 
     static update(dt) {
@@ -30,22 +31,33 @@ class Hands {
             if (!inputSource.hand) continue;
             for (const finger of orderedJoints) {
                 for (const joint of finger) {
+                    const jointID = inputSource.handedness + joint;
                     let jointPose = Engine.getXRFrame().getJointPose(inputSource.hand.get(joint), space);
                     if (!jointPose) continue;
                     
                     this.joints[inputSource.handedness].push(jointPose);
-                    if (joint == "index-finger-tip" && inputSource.handedness == "right") {
-                        if (!this.indexBox) {
-                            this.indexBox = Physic.createCube({x: 0, y: 0, z: 0}, {x: 0.02, y: 0.02, z: 0.02}, 0);
-                            this.modelsContainer.add(this.indexBox);
-                            this.indexBox.physicBody.setActivationState(4);
-                            this.indexBox.physicBody.setCollisionFlags(2);
+                    if (joint.endsWith("tip") || joint.endsWith("proximal") || joint.endsWith("metacarpal")) {
+                        let index = this.colliders.findIndex(c => c.id == jointID);
+                        if (index == -1) {
+                            const newCollider = Physic.createCube({x: 0, y: 0, z: 0}, {x: 0.02, y: 0.02, z: 0.02}, 0);
+                            newCollider.physicBody.setActivationState(4);
+                            newCollider.physicBody.setCollisionFlags(2);
+                            this.colliders.push({id: jointID, collider: newCollider});
+                            index = this.colliders.length - 1;
                         }
                         const trans = new Ammo.btTransform();
-                        trans.setOrigin(new Ammo.btVector3(jointPose.transform.position.x, jointPose.transform.position.y, jointPose.transform.position.z));
-                        trans.setRotation(new Ammo.btQuaternion(jointPose.transform.orientation.x, jointPose.transform.orientation.y, jointPose.transform.orientation.z, jointPose.transform.orientation.w));
-                        this.indexBox.physicBody.getMotionState().setWorldTransform(trans);
-                        //this.indexBox.physicBody.setLinearVelocity.quaternion.copy(jointPose.transform.orientation);
+                        trans.setOrigin(new Ammo.btVector3(
+                            jointPose.transform.position.x + Engine.getPlayer().position.x,
+                            jointPose.transform.position.y + Engine.getPlayer().position.y,
+                            jointPose.transform.position.z + Engine.getPlayer().position.z
+                        ));
+                        trans.setRotation(new Ammo.btQuaternion(
+                            jointPose.transform.orientation.x,
+                            jointPose.transform.orientation.y,
+                            jointPose.transform.orientation.z,
+                            jointPose.transform.orientation.w
+                        ));
+                        this.colliders[index].collider.physicBody.getMotionState().setWorldTransform(trans);
                     }
                 }
             }
@@ -84,7 +96,6 @@ class Hands {
             this.modelsContainer.add(box);
         for(const box of this.boxes.right)
             this.modelsContainer.add(box);
-        this.modelsContainer.add(this.indexBox);
     }
 
     static getJoints() {

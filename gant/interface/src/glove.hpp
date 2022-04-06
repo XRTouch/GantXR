@@ -49,7 +49,7 @@ void serial_startConnection()
         if (thumbModified)
         {
             thumbModified = false;
-            unsigned char data = (unsigned char) clamp(64.0 + thumbForce * amplitude, 0.0, 127.0);
+            unsigned char data = (unsigned char) clamp(62.0 + thumbForce * amplitude, 0.0, 127.0);
             serial_connection.writeBytes(&data, 1);
         }
         if (indexModified)
