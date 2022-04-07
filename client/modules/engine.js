@@ -159,6 +159,16 @@ class Engine {
         return obj;
     }
 
+    static createSphere(pos, radius, color) {
+        const obj = new THREE.Mesh(
+            new THREE.SphereGeometry(radius),
+            Engine.createMaterial({color: color})
+        );
+        obj.position.set(pos.x, pos.y, pos.z);
+        obj.castShadow = true; obj.receiveShadow = true;
+        return obj;
+    }
+
     static createMaterial(properties) {
         return new THREE.MeshPhongMaterial(properties);
     }

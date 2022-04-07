@@ -26,6 +26,7 @@ class Physic {
         this.physicsUniverse.setGravity(new Ammo.btVector3(0, -9.81, 0));
 
         this.createCube({x: 0, y: 0.675, z: -2}, {x: 1.79, y: 0.024, z: 0.89}, 0);
+        // Engine.getScene().add(this.createCube({x: 0, y: 1.5, z: -1.8}, {x: 0.2, y: 0.2, z: 0.2}, 0, 0x444444));
 
         for (let i = 0; i < 10; i++) {
             const size = Math.random() * 0.08 + 0.02;
@@ -33,6 +34,28 @@ class Physic {
             this.toys.push(toy);
             Engine.getScene().add(toy);
         }
+    }
+
+    static createBall(pos, radius, mass, color=0xffffff, rot={x: 0, y: 0, z: 0, w: 1}) {
+        let sphere = Engine.createSphere(pos, radius, color);
+
+        const transform = new Ammo.btTransform();
+        transform.setIdentity();
+        transform.setOrigin( new Ammo.btVector3(pos.x, pos.y, pos.z));
+        transform.setRotation( new Ammo.btQuaternion(rot.x, rot.y, rot.z, rot.w));
+        const defaultMotionState = new Ammo.btDefaultMotionState(transform);
+        
+        const localInertia = new Ammo.btVector3( 0, 0, 0 )
+        const structColShape = new Ammo.btSphereShape(radius);
+        structColShape.setMargin(0.01);
+        structColShape.calculateLocalInertia(mass, localInertia);
+        
+        const RBody_Info = new Ammo.btRigidBodyConstructionInfo(mass, defaultMotionState, structColShape, localInertia);
+        const RBody = new Ammo.btRigidBody( RBody_Info );
+        sphere.physicBody = RBody;
+        sphere.physicsUniverse.addRigidBody(RBody);
+        this.bodies.push(sphere);
+        return sphere;
     }
 
     static createCube(pos, size, mass, color=0xffffff, rot={x: 0, y: 0, z: 0, w: 1}) {
@@ -56,6 +79,11 @@ class Physic {
         this.physicsUniverse.addRigidBody(RBody);
         this.bodies.push(cube);
 
+        return cube;
+    }
+
+    static createTarget(pos, size, rot={x: 0, y: 0, z: 0, w: 1}) {
+        let cube = this.createCube(pos, size, 0, 0, rot);
         return cube;
     }
 
@@ -91,6 +119,10 @@ class Physic {
                 body.quaternion.set(rot.x(), rot.y(), rot.z(), rot.w());
             }
         }
+    }
+
+    static getWorld() {
+        return this.physicsUniverse;
     }
 }
 

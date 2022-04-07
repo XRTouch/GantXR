@@ -9,7 +9,7 @@ function setup(server) {
     if (process.argv[2] != undefined) GloveInterface.init(process.argv[2]);
     else GloveInterface.init();
 
-    GloveInterface.setAmplitude(10);
+    GloveInterface.setAmplitude(15);
     io.on("connection", socket => {
         Logger.socket("Client connected", socket);
         socket.on("disconnect", () => {
@@ -18,11 +18,11 @@ function setup(server) {
 
         socket.on(SOCKET_EVENT.SET_INDEX_FORCE, force => {
             Logger.info("Index force: "+force);
-            // GloveInterface.setIndexForce(force);
+            GloveInterface.setIndexForce(force);
         });
         socket.on(SOCKET_EVENT.SET_THUMB_FORCE, force => {
             Logger.info("Thumb force: "+force);
-            // GloveInterface.setThumbForce(force);
+            GloveInterface.setThumbForce(force);
         });
         socket.on(SOCKET_EVENT.LOG_MSG, msg => {
             Logger.socket(msg, socket);

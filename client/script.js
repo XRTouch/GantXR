@@ -4,6 +4,7 @@ import * as Loader from "./modules/3DLoader.js";
 import Hands from "./modules/hands.js";
 import Logger from "./modules/logger.js";
 import * as socket from "./modules/socket.js";
+import * as Glove from "./modules/glove.js";
 
 socket.init();
 Logger.info("Intializing graphic engine ...");
@@ -16,6 +17,12 @@ try {
 Logger.info("Intializing physic engine ...");
 try {
     Physic.init().then(() => {Logger.success("Physic engine initialized");});
+} catch(e) {Logger.error(e);}
+
+Logger.info("Intializing glove ...");
+try {
+    Glove.setup();
+    Logger.success("Glove initialized");
 } catch(e) {Logger.error(e);}
 
 Logger.info("Loading map model ...");

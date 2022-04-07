@@ -43,14 +43,14 @@ Glove.setup(server);
 Logger.success("Glove Interface successfully set up");
 
 /** CTRL+C Signal handling **/
-process.on("SIGINT", (signal) => {
-    Logger.info("Received signal "+signal+", Shutting down ...");
-    server.close(() => {
-        Logger.success("Server closed");
-        Logger.info("Closing glove interface ...");
-        Glove.shutdown();
-        Logger.success("Glove interface closed");
-        process.exit(0);
-    });
-    Logger.info("Closing server ...");
-});
+// process.on("SIGINT", (signal) => {
+//     Logger.info("Received signal "+signal+", Shutting down ...");
+//     server.close(() => {
+//         Logger.success("Server closed");
+//         Logger.info("Closing glove interface ...");
+//         Glove.shutdown();
+//         Logger.success("Glove interface closed");
+//         process.exit(0);
+//     });
+//     Logger.info("Closing server ...");
+// });

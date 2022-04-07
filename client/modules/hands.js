@@ -1,6 +1,7 @@
 import Engine from "./engine.js";
 import Logger from "./logger.js";
 import Physic from "./physic.js";
+import * as Glove from "./glove.js";
 
 const Joint = {transform:{position: {x:0,y:0,z:0},orientation:{x:0,y:0,z:0,w:0}},radius:0};
 export const orderedJoints = [
@@ -36,16 +37,35 @@ class Hands {
                     if (!jointPose) continue;
                     
                     this.joints[inputSource.handedness].push(jointPose);
-                    if (joint.endsWith("tip") || joint.endsWith("proximal") || joint.endsWith("metacarpal")) {
+                    if (joint.endsWith("tip")) {
                         let index = this.colliders.findIndex(c => c.id == jointID);
                         if (index == -1) {
-                            const newCollider = Physic.createCube({x: 0, y: 0, z: 0}, {x: 0.02, y: 0.02, z: 0.02}, 0);
-                            newCollider.physicBody.setActivationState(4);
-                            newCollider.physicBody.setCollisionFlags(2);
-                            this.colliders.push({id: jointID, collider: newCollider});
+                            const target = Physic.createTarget({x: 0, y: 0, z: 0}, {x: 0.020, y: 0.020, z: 0.020});
+                            const collider = Physic.createCube({x: 0, y: 0, z: 0}, {x: 0.020, y: 0.020, z: 0.020}, 1);
+                            target.physicBody.setActivationState(4);
+                            target.physicBody.setCollisionFlags(4 | 2);
+
+                            const targetTransform = new Ammo.btTransform();
+                            targetTransform.setIdentity();
+                            targetTransform.setOrigin(new Ammo.btVector3(0, 0, 0));
+                            const colliderTransform = new Ammo.btTransform();
+                            colliderTransform.setIdentity();
+                            targetTransform.setOrigin(new Ammo.btVector3(0, 0, 0));
+
+                            const spring = new Ammo.btGeneric6DofSpringConstraint(
+                                target.physicBody,
+                                collider.physicBody,
+                                targetTransform,
+                                colliderTransform,
+                                true
+                            );
+                            Physic.getWorld().addConstraint(spring, false);
+
+                            Engine.getScene().add(collider);
+                            this.colliders.push({id: jointID, target: target, spring: spring, collider: collider});
                             index = this.colliders.length - 1;
                         }
-                        const trans = new Ammo.btTransform();
+                        let trans = new Ammo.btTransform();
                         trans.setOrigin(new Ammo.btVector3(
                             jointPose.transform.position.x + Engine.getPlayer().position.x,
                             jointPose.transform.position.y + Engine.getPlayer().position.y,
@@ -57,7 +77,22 @@ class Hands {
                             jointPose.transform.orientation.z,
                             jointPose.transform.orientation.w
                         ));
-                        this.colliders[index].collider.physicBody.getMotionState().setWorldTransform(trans);
+                        this.colliders[index].target.physicBody.getMotionState().setWorldTransform(trans);
+                        
+                        if (joint == "index-finger-tip" && inputSource.handedness == "right") {
+                            const newPos = {
+                                x: jointPose.transform.position.x + Engine.getPlayer().position.x,
+                                y: jointPose.transform.position.y + Engine.getPlayer().position.y,
+                                z: jointPose.transform.position.z + Engine.getPlayer().position.z
+                            }
+                            const curPos = this.colliders[index].collider.position;
+                            const force = Math.sqrt(
+                                Math.pow(newPos.x - curPos.x, 2) +
+                                Math.pow(newPos.y - curPos.y, 2) +
+                                Math.pow(newPos.z - curPos.z, 2)
+                            ) * 20;
+                            Glove.setIndexForce(Math.min(Math.max(force, 0), 1));
+                        }
                     }
                 }
             }
