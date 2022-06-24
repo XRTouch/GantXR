@@ -1,0 +1,13 @@
+@startuml main loop
+title Boucle principale application GantXR
+
+(*) --> "Récupérer la position des mains"
+--> "Calculer la physique de l'environnement"
+--> "Bouger les cubes de l'environnement"
+--> "Detecter les collisions"
+--> "Calculer la force des collisions"
+--> "Envoyer au gant la force exercée sur l'index"
+--> "Actualiser la vue du joueur"
+--> (*)
+
+@enduml

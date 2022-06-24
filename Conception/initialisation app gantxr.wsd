@@ -1,0 +1,11 @@
+@startuml activity diag gantxr
+title Sequence d'initialisation de l'atelier Gant XR
+
+(*) --> "Requete sur la page web"
+--> "Chargement du moteur graphique Three.JS"
+--> "Chargement du moteur physique Ammo.JS"
+--> "Connexion au Gant XR"
+--> "Chargement des models 3D"
+--> (*)
+
+@enduml

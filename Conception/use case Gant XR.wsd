@@ -1,0 +1,37 @@
+@startuml gantXR
+title Cas d'utilisation atelier GantXR
+
+:utilisateur: as user
+:gant: as glove
+:application: as app
+
+package XRTouch {
+    usecase "Visiter la page web" as visit
+    usecase "Charger l'environnement 3D" as loadApp
+    usecase "Bouger la main" as moveHand
+    usecase "Envoyer une force a exercer" as sendForce
+    usecase "Detecter les collisions" as detectCollisions
+    usecase "Approcher un doigt d'un cube" as approach
+    usecase "Deplacer la main virtuelle" as moveVirtualHand
+    usecase "Exercer la force sur un doigt" as applyForce
+}
+
+visit ..> loadApp
+loadApp ..> moveHand
+moveHand ..> moveVirtualHand
+moveVirtualHand ..> approach
+approach ..> detectCollisions
+detectCollisions ..> sendForce
+sendForce ..> applyForce
+
+user -[#blue]-> visit
+loadApp <-[#red]- app
+user -[#blue]-> moveHand
+moveVirtualHand <-[#red]- app
+user -[#blue]-> approach
+detectCollisions <-[#red]- app
+sendForce <-[#red]- app
+glove -[#green]-> applyForce
+
+
+@enduml

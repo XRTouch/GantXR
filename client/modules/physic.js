@@ -26,7 +26,7 @@ class Physic {
         this.physicsUniverse.setGravity(new Ammo.btVector3(0, -9.81, 0));
 
         this.createCube({x: 0, y: 0.675, z: -2}, {x: 1.79, y: 0.024, z: 0.89}, 0);
-        // Engine.getScene().add(this.createCube({x: 0, y: 1.5, z: -1.8}, {x: 0.2, y: 0.2, z: 0.2}, 0, 0x444444));
+        Engine.getScene().add(this.createCube({x: 0, y: 1.5, z: -1.8}, {x: 0.2, y: 0.2, z: 0.2}, 0, 0x444444));
 
         for (let i = 0; i < 10; i++) {
             const size = Math.random() * 0.08 + 0.02;

@@ -61,7 +61,7 @@ class Hands {
                             );
                             Physic.getWorld().addConstraint(spring, false);
 
-                            Engine.getScene().add(collider);
+                            // Engine.getScene().add(collider);
                             this.colliders.push({id: jointID, target: target, spring: spring, collider: collider});
                             index = this.colliders.length - 1;
                         }
